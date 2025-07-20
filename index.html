@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Văn bản Đến/Đi - Offline</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Offline Font Awesome CSS -->
+    <style>
+        /* Font Awesome Icons - Offline version */
+        @font-face {
+            font-family: 'FontAwesome';
+            src: url('data:application/font-woff;base64,') format('woff');
+        }
+        
+        .fas, .fa {
+            font-family: 'FontAwesome';
+            font-weight: 900;
+        }
+        
+        /* Icon replacements using CSS */
+        .fa-file-alt:before { content: '📄'; }
+        .fa-plus:before { content: '➕'; }
+        .fa-bell:before { content: '🔔'; }
+        .fa-tachometer-alt:before { content: '📊'; }
+        .fa-arrow-down:before { content: '⬇️'; }
+        .fa-arrow-up:before { content: '⬆️'; }
+        .fa-search:before { content: '🔍'; }
+        .fa-chart-bar:before { content: '📈'; }
+        .fa-eye:before { content: '👁️'; }
+        .fa-edit:before { content: '✏️'; }
+        .fa-trash:before { content: '🗑️'; }
+        .fa-building:before { content: '🏢'; }
+        .fa-calendar-alt:before { content: '📅'; }
+        .fa-file:before { content: '📁'; }
+        .fa-clock:before { content: '⏰'; }
+        .fa-exclamation-triangle:before { content: '⚠️'; }
+        .fa-check-circle:before { content: '✅'; }
+        .fa-exclamation-circle:before { content: '❗'; }
+        .fa-info-circle:before { content: 'ℹ️'; }
+        .fa-download:before { content: '⬇️'; }
+        .fa-file-signature:before { content: '📝'; }
+        .fa-gavel:before { content: '⚖️'; }
+        .fa-bullhorn:before { content: '📢'; }
+        .fa-chart-line:before { content: '📊'; }
+        .fa-hand-paper:before { content: '✋'; }
+        .fa-paperclip:before { content: '📎'; }
+        .fa-external-link-alt:before { content: '🔗'; }
+        
+        /* Override font-family for icons */
+        .fas, .fa {
+            font-family: inherit !important;
+            font-weight: normal !important;
+        }
+
+        /* CSS cho logo Khoa An ninh điều tra */
+        .logo-title-container {
+            display: flex !important;
+            align-items: center !important;
+            gap: 15px !important;
+            flex-wrap: wrap !important;
+        }
+
+        .app-logo {
+            width: 50px !important;
+            height: 50px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 2px solid #4a90e2 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            transition: transform 0.3s ease !important;
+            flex-shrink: 0 !important;
+        }
+
+        .app-logo:hover {
+            transform: scale(1.05) !important;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .logo-title-container {
+                gap: 10px !important;
+            }
+            
+            .app-logo {
+                width: 40px !important;
+                height: 40px !important;
+            }
+        }
+
+        /* Header styles */
+        .header {
+            background: linear-gradient(to right, #007bff, #0056b3) !important;
+            color: #fff !important;
+            padding: 10px 0 !important;
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .header-content h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-actions .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .header-actions .btn-primary {
+            background: #4caf50;
+            color: #fff;
+        }
+        
+        .header-actions .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .header-actions .btn-secondary {
+            background: #f44336;
+            color: #fff;
+        }
+        
+        .header-actions .btn-secondary:hover {
+            background: #e53935;
+        }
+        
+        /* Navigation styles */
+        .nav {
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+            list-style: none;
+            margin: 0;
+        }
+        
+        .nav-link {
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link.active {
+            background: #007bff;
+            color: #fff;
+        }
+        
+        .nav-link:hover {
+            background: #f1f1f1;
+        }
+        
+        .nav-link i {
+            margin-right: 5px;
+        }
+        
+        /* Main content styles */
+        .main {
+            padding: 20px;
+            background: #f4f4f9;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .section-header h2 {
+            font-size: 1.6rem;
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .section-header button {
+            padding: 8px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .section-header .btn-primary {
+            background: #007bff;
+            color: #fff;
+        }
+        
+        .section-header .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        /* Table styles */
+        .document-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .document-table th, .document-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        .document-table th {
+            background: #f1f1f1;
+            font-weight: 600;
+        }
+        
+        .document-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        /* Button styles */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #fff;
+            background: #007bff;
+            border: none;
+            border-radius: 3px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        /* Toast notification styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .toast {
+            background: #333;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        /* Loading overlay styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #007bff;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Chart styles */
+        .chart-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .chart-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* Advanced search styles */
+        .advanced-search {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-content h1 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .document-table {
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo sẽ được chèn bằng JS -->
+                <h1 style="font-size:2.3rem; font-weight:700; color:#fff; margin:0; letter-spacing:1px; text-shadow:0 2px 8px rgba(0,0,0,0.08); text-transform:uppercase; display: flex; align-items: center;">
+                    QUẢN LÝ VĂN BẢN
+                </h1>
+                
+                <!-- Thêm nút nhắc việc -->
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="notificationBtn">
+                        <i class="fas fa-bell"></i> Nhắc việc
+                        <span id="notificationBadge" class="notification-badge" style="display:none;">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav" aria-label="Điều hướng chính">
+        <div class="container">
+            <ul role="tablist" class="nav-menu">
+                <li role="presentation">
+                    <a href="#" class="nav-link active" data-section="dashboard" role="tab" aria-selected="true" aria-controls="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Tổng quan
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#" class="nav-link" data-section="incoming" role="tab" aria-selected="false" aria-controls="incoming">
+                        <i class="fas fa-arrow-down"></i> Văn bản đến
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#" class="nav-link" data-section="outgoing" role="tab" aria-selected="false" aria-controls="outgoing">
+                        <i class="fas fa-arrow-up"></i> Văn bản đi
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#" class="nav-link" data-section="search" role="tab" aria-selected="false" aria-controls="search">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#" class="nav-link" data-section="reports" role="tab" aria-selected="false" aria-controls="reports">
+                        <i class="fas fa-chart-bar"></i> Báo cáo
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active" role="tabpanel" aria-labelledby="tab-dashboard">
+                <h2>Tổng quan hệ thống</h2>
+                
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon incoming">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="incomingCount"></h3>
+                            <p>Văn bản đến</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon outgoing">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="outgoingCount"></h3>
+                            <p>Văn bản đi</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="pendingCount"></h3>
+                            <p>Chờ xử lý</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon overdue">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="overdueCount"></h3>
+                            <p>Quá hạn</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Documents -->
+                <div class="recent-documents">
+                    <h3>Văn bản gần đây</h3>
+                    <div class="document-list" id="recentDocuments">
+                        <!-- Documents will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Pending Tasks -->
+                <div class="pending-tasks">
+                    <h3>Công việc sắp đến hạn</h3>
+                    <style>
+                    /* CSS cho hyperlink file đính kèm */
+                    .attachment-link {
+                        color: #007bff !important;
+                        text-decoration: none !important;
+                        font-weight: bold;
+                        transition: color 0.3s ease;
+                    }
+                    
+                    .attachment-link:hover {
+                        color: #0056b3 !important;
+                        text-decoration: underline !important;
+                    }
+                    
+                    .attachment-preview {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 10px;
+                        border: 1px solid #ddd;
+                        border-radius: 5px;
+                        background: #f9f9f9;
+                        margin-top: 5px;
+                    }
+                    
+                    .attachment-preview .fas {
+                        font-size: 20px;
+                        color: #666;
+                    }
+                    
+                    .attachment-info {
+                        flex: 1;
+                    }
+                    
+                    .attachment-name {
+                        font-weight: bold;
+                        margin-bottom: 3px;
+                    }
+                    
+                    .attachment-meta {
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    
+                    .attachment-warning {
+                        font-size: 11px;
+                        color: #ff6b6b;
+                        margin-top: 3px;
+                    }
+                    
+                    .btn-download {
+                        padding: 5px 10px;
+                        font-size: 12px;
+                        border: 1px solid #007bff;
+                        background: white;
+                        color: #007bff;
+                        border-radius: 3px;
+                        text-decoration: none;
+                        transition: all 0.3s ease;
+                    }
+                    
+                    .btn-download:hover {
+                        background: #007bff;
+                        color: white;
+                    }
+                    
+                    /* CSS cho paperclip icon trong bảng */
+                    .paperclip-link {
+                        color: #007bff;
+                        text-decoration: none;
+                        margin-left: 5px;
+                        font-size: 14px;
+                        transition: color 0.3s ease;
+                    }
+                    
+                    .paperclip-link:hover {
+                        color: #0056b3;
+                        transform: scale(1.1);
+                    }
+                    </style>                    <div class="task-list" id="pendingTasks">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Incoming Documents Section -->
+            <section id="incoming" class="section" role="tabpanel" aria-labelledby="tab-incoming">
+                <div class="section-header">
+                    <h2>Văn bản đến</h2>
+                    <!-- Kiểm tra nút trong section -->
+                    <button class="btn btn-primary" onclick="window.documentManager.openDocumentModal('incoming')">
+                        <i class="fas fa-plus"></i> Thêm văn bản đến
+                    </button>
+                </div>
+                
+                <div class="filters">
+                    <input type="text" placeholder="Tìm kiếm..." class="search-input" id="incomingSearch" aria-label="Tìm kiếm văn bản đến">
+                    <select class="filter-select" id="incomingStatusFilter" aria-label="Lọc trạng thái văn bản đến">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="pending">Chờ xử lý</option>
+                        <option value="processing">Đang xử lý</option>
+                        <option value="completed">Hoàn thành</option>
+                        <option value="overdue">Quá hạn</option>
+                    </select>
+                    <select class="filter-select" id="incomingTypeFilter" aria-label="Lọc loại văn bản đến">
+                        <option value="">Tất cả loại văn bản</option>
+                        <option value="official">Công văn</option>
+                        <option value="directive">Chỉ thị</option>
+                        <option value="decision">Quyết định</option>
+                        <option value="notification">Thông báo</option>
+                        <option value="report">Báo cáo</option>
+                        <option value="plan">Kế hoạch</option>
+                        <option value="proposal">Đề xuất/Đề nghị</option>
+                        <option value="guideline">Hướng dẫn</option>
+                        <option value="circular">Thông tư</option>
+                        <option value="certificate">Giấy chứng nhận</option>
+                        <option value="contract">Hợp đồng</option>
+                        <option value="agreement">Thỏa thuận</option>
+                        <option value="minutes">Biên bản</option>
+                        <option value="instruction">Chỉ đạo</option>
+                        <option value="summary">Tờ trình</option>
+                        <option value="memo">Bản ghi nhớ</option>
+                        <option value="invitation">Thư mời</option>
+                        <option value="other">Khác</option>
+                    </select>
+                </div>
+
+                <div class="document-table-container">
+                    <table class="document-table">
+                        <thead>
+                            <tr>
+                                <th>Số hiệu</th>
+                                <th>Ngày đến</th>
+                                <th>Trích yếu</th>
+                                <th>Cơ quan gửi</th>
+                                <th>Chủ trì thực hiện</th>
+                                <th>Loại văn bản</th>
+                                <th>Trạng thái</th>
+                                <th>Hạn xử lý</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incomingDocuments">
+                            <!-- Documents will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Outgoing Documents Section -->
+            <section id="outgoing" class="section" role="tabpanel" aria-labelledby="tab-outgoing">
+                <div class="section-header">
+                    <h2>Văn bản đi</h2>
+                    <!-- Kiểm tra nút trong section -->
+                    <button class="btn btn-primary" onclick="window.documentManager.openDocumentModal('outgoing')">
+                        <i class="fas fa-plus"></i> Thêm văn bản đi
+                    </button>
+                </div>
+                
+                <div class="filters">
+                    <input type="text" placeholder="Tìm kiếm..." class="search-input" id="outgoingSearch" aria-label="Tìm kiếm văn bản đi">
+                    <select class="filter-select" id="outgoingStatusFilter" aria-label="Lọc trạng thái văn bản đi">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="draft">Dự thảo</option>
+                        <option value="pending">Chờ ký</option>
+                        <option value="signed">Đã ký</option>
+                        <option value="sent">Đã gửi</option>
+                    </select>
+                    <select class="filter-select" id="outgoingTypeFilter" aria-label="Lọc loại văn bản đi">
+                        <option value="">Tất cả loại văn bản</option>
+                        <option value="official">Công văn</option>
+                        <option value="directive">Chỉ thị</option>
+                        <option value="decision">Quyết định</option>
+                        <option value="notification">Thông báo</option>
+                        <option value="report">Báo cáo</option>
+                        <option value="plan">Kế hoạch</option>
+                        <option value="proposal">Đề xuất/Đề nghị</option>
+                        <option value="guideline">Hướng dẫn</option>
+                        <option value="circular">Thông tư</option>
+                        <option value="certificate">Giấy chứng nhận</option>
+                        <option value="contract">Hợp đồng</option>
+                        <option value="agreement">Thỏa thuận</option>
+                        <option value="minutes">Biên bản</option>
+                        <option value="instruction">Chỉ đạo</option>
+                        <option value="summary">Tờ trình</option>
+                        <option value="memo">Bản ghi nhớ</option>
+                        <option value="invitation">Thư mời</option>
+                        <option value="other">Khác</option>
+                    </select>
+                </div>
+
+                <div class="document-table-container">
+                    <table class="document-table">
+                        <thead>
+                            <tr>
+                                <th>Số hiệu</th>
+                                <th>Ngày tạo</th>
+                                <th>Trích yếu</th>
+                                <th>Nơi nhận</th>
+                                <th>Loại văn bản</th>
+                                <th>Trạng thái</th>
+                                <th>Người ký</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="outgoingDocuments">
+                            <!-- Documents will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Search Section -->
+            <section id="search" class="section" role="tabpanel" aria-labelledby="tab-search">
+                <h2>Tìm kiếm nâng cao</h2>
+                
+                <div class="advanced-search">
+                    <div class="search-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="searchText">Từ khóa</label>
+                                <input type="text" id="searchText" placeholder="Nhập từ khóa tìm kiếm...">
+                            </div>
+                            <div class="form-group">
+                                <label for="searchType">Loại văn bản</label>
+                                <select id="searchType">
+                                    <option value="">Tất cả</option>
+                                    <option value="incoming">Văn bản đến</option>
+                                    <option value="outgoing">Văn bản đi</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="searchDateFrom">Từ ngày</label>
+                                <input type="date" id="searchDateFrom">
+                            </div>
+                            <div class="form-group">
+                                <label for="searchDateTo">Đến ngày</label>
+                                <input type="date" id="searchDateTo">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="searchDepartment">Cơ quan</label>
+                                <input type="text" id="searchDepartment" placeholder="Tên cơ quan...">
+                            </div>
+                            <div class="form-group">
+                                <label for="searchStatus">Trạng thái</label>
+                                <select id="searchStatus">
+                                    <option value="">Tất cả</option>
+                                    <option value="pending">Chờ xử lý</option>
+                                    <option value="processing">Đang xử lý</option>
+                                    <option value="completed">Hoàn thành</option>
+                                    <option value="overdue">Quá hạn</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="searchBtn">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-results" id="searchResults">
+                    <!-- Search results will be displayed here -->
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="section" role="tabpanel" aria-labelledby="tab-reports">
+                <h2>Báo cáo thống kê</h2>
+                
+                <div class="report-controls">
+                    <select id="reportType">
+                        <option value="monthly">Báo cáo tháng</option>
+                        <option value="quarterly">Báo cáo quý</option>
+                        <option value="yearly">Báo cáo năm</option>
+                    </select>
+                    <input type="month" id="reportPeriod">
+                    <button class="btn btn-primary" id="generateReportBtn">
+                        <i class="fas fa-chart-bar"></i> Tạo báo cáo
+                    </button>
+                    <button class="btn btn-secondary" id="exportReportBtn">
+                        <i class="fas fa-download"></i> Xuất Excel
+                    </button>
+                    <button class="btn btn-success" id="exportWordBtn">
+                        <i class="fas fa-file-word"></i> Xuất Word
+                    </button>
+                </div>
+
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Thống kê theo loại văn bản</h3>
+                        <div id="typeChart" style="height: 300px; display: flex; align-items: center; justify-content: center; color: #666;">
+                            📊 Biểu đồ thống kê sẽ hiển thị ở đây
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Xu hướng theo thời gian</h3>
+                        <div id="trendChart" style="height: 300px; display: flex; align-items: center; justify-content: center; color: #666;">
+                            📈 Biểu đồ xu hướng sẽ hiển thị ở đây
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-table" id="reportTable">
+                    <!-- Report data will be displayed here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Document Modal -->
+    <div id="documentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Thêm văn bản</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            
+            <form id="documentForm" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="documentNumber">Số hiệu văn bản *</label>
+                        <input type="text" id="documentNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="documentDate">Ngày ban hành *</label>
+                        <input type="date" id="documentDate" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="documentSummary">Trích yếu *</label>
+                    <textarea id="documentSummary" rows="3" required placeholder="Nhập trích yếu nội dung văn bản..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="documentType">Loại văn bản *</label>
+                        <select id="documentType" required>
+                            <option value="">Chọn loại văn bản</option>
+                            <option value="official">Công văn</option>
+                            <option value="directive">Chỉ thị</option>
+                            <option value="decision">Quyết định</option>
+                            <option value="agreement">Thỏa thuận</option>
+                            <option value="minutes">Biên bản</option>
+                            <option value="instruction">Chỉ đạo</option>
+                            <option value="summary">Tờ trình</option>
+                            <option value="memo">Bản ghi nhớ</option>
+                            <option value="invitation">Thư mời</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="documentPriority">Độ ưu tiên</label>
+                        <select id="documentPriority">
+                            <option value="normal">Bình thường</option>
+                            <option value="urgent">Khẩn</option>
+                            <option value="very-urgent">Hỏa tốc</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="documentStatus">Trạng thái</label>
+                        <select id="documentStatus">
+                            <option value="pending">Chờ xử lý</option>
+                            <option value="processing">Đang xử lý</option>
+                            <option value="completed">Hoàn thành</option>
+                            <option value="archived">Đã lưu trữ</option>
+                            <option value="draft">Bản nháp</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row" id="incomingFields">
+                    <div class="form-group">
+                        <label for="senderDepartment">Cơ quan gửi *</label>
+                        <input type="text" id="senderDepartment" placeholder="Tên cơ quan gửi văn bản">
+                    </div>
+                    <div class="form-group">
+                        <label for="mainResponsible">Chủ trì thực hiện</label>
+                        <input type="text" id="mainResponsible" placeholder="Nhập tên đơn vị/cá nhân chủ trì thực hiện">
+                    </div>
+                    <div class="form-group">
+                        <label for="processingDeadline">Hạn xử lý</label>
+                        <input type="date" id="processingDeadline">
+                    </div>
+                </div>
+                
+                <div class="form-row" id="outgoingFields">
+                    <div class="form-group">
+                        <label for="receiverDepartment">Nơi nhận *</label>
+                        <input type="text" id="receiverDepartment" placeholder="Tên cơ quan nhận văn bản">
+                    </div>
+                    <div class="form-group">
+                        <label for="signer">Người ký</label>
+                        <input type="text" id="signer" placeholder="Tên người ký">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="documentTags">Thẻ phân loại</label>
+                    <input type="text" id="documentTags" placeholder="Nhập các thẻ, cách nhau bằng dấu phẩy">
+                </div>
+                
+                <div class="form-group">
+                    <label for="documentFile">Tệp đính kèm</label>
+                    <input type="file" id="documentFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                </div>
+                
+                <div class="form-group">
+                    <label for="documentNotes">Ghi chú</label>
+                    <textarea id="documentNotes" rows="2" placeholder="Ghi chú thêm..."></textarea>
+                </div>
+            </form>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
+                <button type="submit" form="documentForm" class="btn btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Preview Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="previewTitle">Chi tiết văn bản</h3>
+                <button class="close-btn" id="closePreview">&times;</button>
+            </div>
+            <div class="modal-body" id="previewContent">
+                <!-- Document details will be displayed here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="editDocBtn">Chỉnh sửa</button>
+                <button type="button" class="btn btn-danger" id="deleteDocBtn">Xóa</button>
+                <button type="button" class="btn btn-primary" id="closePreviewBtn">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal nhắc việc -->
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Thông báo nhắc việc</h3>
+                <button class="close-btn" onclick="closeNotificationModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="notificationContent">
+                <!-- Nội dung nhắc việc sẽ được JS render -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNotificationModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Đang xử lý...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Offline Chart.js alternative -->
+    <script>
+        // Simple Chart.js alternative for offline use
+        window.Chart = function(ctx, config) {
+            return {
+                data: config.data,
+                update: function() {
+                    // Simple update function
+                }
+            };
+        };
+    </script>
+
+    <!-- Debug Script -->
+    <script>
+        console.log('HTML script loaded');
+        
+        // Kiểm tra các hàm global
+        window.addEventListener('load', function() {
+            console.log('Window loaded');
+            console.log('documentManager:', window.documentManager);
+            console.log('openDocumentModal:', window.openDocumentModal);
+            
+            // Test function
+            window.testFunction = function() {
+                console.log('Test function called');
+                alert('Test successful!');
+            };
+        });
+    </script>
+
+    <!-- Load script.js -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
