@@ -104,4 +104,31 @@ export default class Formatters {
         };
         return types[docType] || 'Khác';
     }
+
+    // Thêm mapping loại văn bản và từ viết tắt
+    static getDocumentTypeAbbreviation(docType) {
+        const abbreviations = {
+            'official': 'CV',        // Công văn
+            'letter': 'CV',          // Công văn
+            'directive': 'CT',       // Chỉ thị
+            'instruction': 'CD',     // Chỉ đạo
+            'decision': 'QD',        // Quyết định
+            'notification': 'TB',    // Thông báo
+            'announcement': 'TB',    // Thông báo
+            'report': 'BC',          // Báo cáo
+            'plan': 'KH',            // Kế hoạch
+            'proposal': 'DX',        // Đề xuất
+            'guideline': 'HD',       // Hướng dẫn
+            'circular': 'TT',        // Thông tư
+            'certificate': 'GCN',    // Giấy chứng nhận
+            'contract': 'HD',        // Hợp đồng
+            'agreement': 'TTh',      // Thỏa thuận
+            'minutes': 'BB',         // Biên bản
+            'summary': 'TTr',        // Tờ trình
+            'memo': 'BGN',           // Bản ghi nhớ
+            'invitation': 'TM',      // Thư mời
+            'other': 'K'             // Khác
+        };
+        return abbreviations[docType] || 'K';
+    }
 }

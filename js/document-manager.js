@@ -336,6 +336,30 @@ export default class DocumentManager {
         return tr;
     }
 
+    // Thêm phương thức tạo số hiệu tự động
+    async generateDocumentNumber(documentType) {
+        if (!documentType) return '';
+        
+        try {
+            // Lấy từ viết tắt của loại văn bản
+            const abbreviation = Formatters.getDocumentTypeAbbreviation(documentType);
+            
+            // Đếm tổng số văn bản đi hiện có (không phụ thuộc vào loại văn bản)
+            const outgoingDocsCount = this.documents.filter(doc => doc.type === 'outgoing').length;
+            
+            // Tạo số thứ tự mới = tổng số văn bản đi + 1
+            const nextNumber = outgoingDocsCount + 1;
+            const formattedNumber = String(nextNumber).padStart(2, '0');
+            
+            // Tạo số hiệu: Số thứ tự + "/" + Từ viết tắt + "-K7"
+            return `${formattedNumber}/${abbreviation}-K7`;
+            
+        } catch (error) {
+            console.error('Error generating document number:', error);
+            return '';
+        }
+    }
+
     // Document management methods
     openDocumentModal(type) {
         console.log(`Opening document modal for type: ${type}`);
@@ -373,13 +397,40 @@ export default class DocumentManager {
             outgoingFields.style.display = 'flex';
             document.getElementById('senderDepartment').required = false;
             document.getElementById('receiverDepartment').required = true;
+            
+            // Thiết lập sự kiện cho dropdown loại văn bản (chỉ với văn bản đi)
+            this.setupDocumentTypeHandler();
         }
         
         // Show modal
         UIUtils.showModal('documentModal');
     }
 
-    // Cập nhật method handleFileUpload
+    // Thêm phương thức xử lý sự kiện thay đổi loại văn bản
+    setupDocumentTypeHandler() {
+        const documentTypeSelect = document.getElementById('documentType');
+        const documentNumberInput = document.getElementById('documentNumber');
+        
+        if (!documentTypeSelect || !documentNumberInput) return;
+        
+        // Xóa event listener cũ nếu có
+        documentTypeSelect.removeEventListener('change', this.handleDocumentTypeChange);
+        
+        // Thêm event listener mới
+        this.handleDocumentTypeChange = async (event) => {
+            const selectedType = event.target.value;
+            if (selectedType && this.currentDocumentType === 'outgoing') {
+                // Chỉ tự động tạo số hiệu khi là văn bản đi và không đang edit
+                if (!this.currentEditingDoc) {
+                    const autoNumber = await this.generateDocumentNumber(selectedType);
+                    documentNumberInput.value = autoNumber;
+                }
+            }
+        };
+        
+        documentTypeSelect.addEventListener('change', this.handleDocumentTypeChange);
+    }
+
     async handleFileUpload(documentType) {
         const fileInput = document.getElementById('documentFile');
         const file = fileInput.files[0];
@@ -437,10 +488,14 @@ export default class DocumentManager {
                 priority: document.getElementById('documentPriority').value,
                 tags: document.getElementById('documentTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
                 notes: document.getElementById('documentNotes').value,
-                status: document.getElementById('documentStatus').value,
-                createdAt: this.currentEditingDoc ? this.currentEditingDoc.createdAt : new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+                status: document.getElementById('documentStatus').value
             };
+            
+            // Nếu là thêm mới (không phải sửa), xóa 2 trường này trước khi gửi API
+            if (!this.currentEditingDoc) {
+                delete docData.created_at;
+                delete docData.updated_at;
+            }
             
             // Add type-specific fields
             if (this.currentDocumentType === 'incoming') {
@@ -474,12 +529,6 @@ export default class DocumentManager {
                 docData.attachment_size = this.currentEditingDoc.attachment_size;
             }
             
-            // Nếu là thêm mới (không phải sửa), xóa 2 trường này trước khi gửi API
-            if (!this.currentEditingDoc) {
-                delete docData.createdAt;
-                delete docData.updatedAt;
-            }
-
             // Save to database via API
             await this.saveDocumentToAPI(docData);
             
