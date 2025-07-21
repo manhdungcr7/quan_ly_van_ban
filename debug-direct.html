@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Direct Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div style="padding: 20px;">
+        <h1>Debug Direct Test</h1>
+        
+        <button class="btn btn-primary" onclick="testDirectOpenModal()">Test Direct openDocumentModal</button>
+        <button class="btn btn-secondary" onclick="testElements()">Test Elements</button>
+        <button class="btn btn-secondary" onclick="testDocumentManager()">Test DocumentManager</button>
+        
+        <div id="documentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Test Modal</h2>
+                    <button class="close" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal mở thành công!</p>
+                    <button class="btn btn-secondary" id="cancelBtn">Đóng</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="previewModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="previewTitle">Preview Modal</h2>
+                    <button class="close" id="closePreview">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="previewContent">Preview content</div>
+                    <button class="btn btn-secondary" id="closePreviewBtn">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="debug.js"></script>
+</body>
+</html>
